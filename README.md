@@ -1,10 +1,10 @@
-# TypeScript Enum generalization proposal
+# TypeScript enum generalization proposal
 
 See [this bug for where this originated](https://github.com/Microsoft/TypeScript/issues/1206).
 
 ## Examples
 
-A typesafe list of token types in a parser.
+A typesafe list of token types in a parser, each of which are objects.
 
 ```ts
 declare function type(kind: string, length: number): TokenType;
@@ -20,24 +20,51 @@ enum TokenTypes: TokenType {
     String       = type('String', 0),
     EOF          = type('EOF', 0),
 }
+```
 
-enum tuples: [number, number] {
+An enum of 2-tuples.
+
+```ts
+enum Tuples: [number, number] {
   a = [0, 1],
   b = [0, 2],
+}
+```
+
+A couple enums of functions.
+
+```ts
+enum Unary: (x: number) => number {
+    Negate = x => -x,
+    Abs = x => x < 0 ? -x : x,
+    ToInt = x => x - x % 1,
+}
+
+enum Binary: (x: number, y: number) => number {
+    Plus = (x, y) => x + y,
+    Minus = (x, y) => x - y,
+    Times = (x, y) => x * y,
+    Divide = (x, y) => x / y,
+    Remainder = (x, y) => x % y,
+    Modulus = (x, y) => (x % y + y) % y,
+    Max = (x, y) => x < y ? y : x,
+    Min = (x, y) => x > y ? y : x,
 }
 ```
 
 Const enums can also now include more than just numbers in this proposal.
 
 ```ts
-const enum Encodings: string {
-    ascii,
-    binary,
-    utf8,
-    ucs2,
-    utf16le,
-    hex,
-    base64,
+namespace NodeJS {
+    const enum Encodings: string {
+        ascii,
+        binary,
+        utf8,
+        ucs2,
+        utf16le,
+        hex,
+        base64,
+    }
 }
 
 const enum ButtonState: boolean {
@@ -46,7 +73,17 @@ const enum ButtonState: boolean {
 }
 ```
 
------
+Strict type checking for enums.
+
+```ts
+// This would fail to compile
+enum Numbers: number {
+    One = "one",
+    Two = "two",
+}
+```
+
+## Spec change proposal
 
 These are all amendments to [the enum part of the spec](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#9-enums).
 
