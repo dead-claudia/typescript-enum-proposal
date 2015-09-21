@@ -85,7 +85,7 @@ enum Numbers: number {
 
 ## Spec change proposal
 
-These are all amendments to [the enum part of the spec](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#9-enums).
+Here's the actual proposal. Read this as a list of changes to be made to [Section 9 (Enums) of the spec](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#9-enums).
 
 ## Enum Declaration
 
