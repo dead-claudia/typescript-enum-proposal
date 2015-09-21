@@ -7,18 +7,35 @@ See [this bug for where this originated](https://github.com/Microsoft/TypeScript
 A typesafe list of token types in a parser, each of which are objects.
 
 ```ts
-declare function type(kind: string, length: number): TokenType;
+class TokenType {
+    constructor(public kind: string, public length: number) {}
+}
 
 enum TokenTypes: TokenType {
-    OpenCurved   = type('(', 1),
-    CloseCurved  = type(')', 1),
-    OpenBracket  = type('[', 1),
-    CloseBracket = type(']', 1),
-    OpenCurly    = type('{', 1),
-    CloseCurly   = type('}', 1),
-    Identifier   = type('Identifier', 0),
-    String       = type('String', 0),
-    EOF          = type('EOF', 0),
+    OpenCurved = new TokenType('(', 1),
+    CloseCurved = new TokenType(')', 1),
+    OpenBracket = new TokenType('[', 1),
+    CloseBracket = new TokenType(']', 1),
+    OpenCurly = new TokenType('{', 1),
+    CloseCurly = new TokenType('}', 1),
+    Identifier = new TokenType('Identifier', 0),
+    String = new TokenType('String', 0),
+    EOF = new TokenType('EOF', 0),
+}
+```
+
+An enum of ES6 symbols.
+
+```ts
+enum SymbolList: symbol {
+    Spam, // Symbol("Spam")
+    Eggs,
+    Ham,
+    Nothing,
+    None,
+    Ziltch,
+    Nada,
+    Flamingo,
 }
 ```
 
@@ -52,7 +69,7 @@ enum Binary: (x: number, y: number) => number {
 }
 ```
 
-Const enums can also now include more than just numbers in this proposal.
+Const enums can also now contain more than just numbers in this proposal.
 
 ```ts
 namespace NodeJS {
@@ -70,6 +87,50 @@ namespace NodeJS {
 const enum ButtonState: boolean {
     On: true,
     Off: false,
+}
+```
+
+Inferred argument names for constructors taking numbers.
+
+```ts
+class Ball {
+    constructor(public number: number) {}
+    /* methods... */
+}
+
+enum Balls: Ball {
+    One = new Ball(1),
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seve,
+    Eight,
+    Nine,
+}
+
+enum BallsFromZero: Ball {
+    Zero, // new Ball(0)
+    One,
+    Two,
+    Three,
+}
+```
+
+Inferred argument names for constructors taking strings.
+
+```ts
+class Name {
+    constructor(public name: string) {}
+    /* methods... */
+}
+
+enum Names: Name {
+    Jack, // new Name("Jack")
+    John,
+    Jill,
+    Jane,
 }
 ```
 
