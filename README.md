@@ -1,6 +1,50 @@
 # TypeScript Enum generalization proposal
 
-(See [this bug](https://github.com/Microsoft/TypeScript/issues/1206))
+See [this bug for where this originated](https://github.com/Microsoft/TypeScript/issues/1206).
+
+## Examples
+
+A typesafe list of token types in a parser.
+
+```ts
+declare function type(kind: string, length: number): TokenType;
+
+enum TokenTypes: TokenType {
+    OpenCurved   = type('(', 1),
+    CloseCurved  = type(')', 1),
+    OpenBracket  = type('[', 1),
+    CloseBracket = type(']', 1),
+    OpenCurly    = type('{', 1),
+    CloseCurly   = type('}', 1),
+    Identifier   = type('Identifier', 0),
+    String       = type('String', 0),
+    EOF          = type('EOF', 0),
+}
+
+enum tuples: [number, number] {
+  a = [0, 1],
+  b = [0, 2],
+}
+```
+
+Const enums can also now include more than just numbers in this proposal.
+
+```ts
+const enum Encodings: string {
+    ascii,
+    binary,
+    utf8,
+    ucs2,
+    utf16le,
+    hex,
+    base64,
+}
+
+const enum ButtonState: boolean {
+    On: true,
+    Off: false,
+}
+```
 
 -----
 
@@ -453,174 +497,4 @@ var Color;
     Color["Green"] = "Blue";
     Color["Blue"] = "Purple";
 })(Color||(Color={}));
-```
-
-*End of proposal.*
-
----
-
-Examples from Microsoft/TypeScript#1206
-
-```ts
-interface EmscriptenEnumEntry {
-  value: number; /* some more properties ... */
-}
-declare enum Month: EmscriptenEnumEntry {Jan, Feb, Mar}
-// Month.Jan.value == 0, Month.Feb.value == 1, ...
-
-interface IFoo {
-    id: string;
-    code: number;
-}
-enum Foo: IFoo {
-    BAR = { id: "BAR", code: 123 },
-    BAZ = { id: "", code: 0 }
-}
-
-enum Audience: String {
-    Public,
-    Friends,
-    Private,
-}
-
-enum Test: string {
-    Foo = "Bar",
-    Bar = "Baz",
-    Baz = "Foo"
-}
-
-// const string enums now exist.
-const enum A: string {x, y, z}
-
-enum Foo2: boolean {
-    BAR = true, // assigning required
-    BAZ = false
-}
-
-enum TokenTypes: TokenType {
-    OpenCurved   = type('(', 1),
-    CloseCurved  = type(')', 1),
-    OpenBracket  = type('[', 1),
-    CloseBracket = type(']', 1),
-    OpenCurly    = type('{', 1),
-    CloseCurly   = type('}', 1),
-    Identifier   = type('Identifier', 0),
-    String       = type('String', 0),
-    EOF          = type('EOF', 0),
-}
-
-enum tuples: [number, number] {
-  a = [0, 1],
-  b = [0, 2],
-  // tuples...
-}
-
-/*
- * The Planets Java example
- */
-class PlanetType {
-    constructor(
-        private label: string,
-        private size: string,
-        private orbit: number);
-    
-    canSwallow(planet: Planet): bool {
-       return planet.size < this.size;
-    }
-
-    isCloserToSun(planet: Planet): bool {
-       return planet.orbit < this.orbit;
-    }
-
-    static fromOr(nameindexOrType: string, defVal: Planet = null): Planet {
-       var e = from(nameindexOrType);
-       return e == null ? defVal : e;
-    }
-
-    static from(nameindexOrType: string): Planet {
-        if (nameindexOrType == null) {
-            return null;
-        } else if (typeof nameindexOrType === 'Number') {
-            switch(nameindexOrType){
-            case 0: return Planet.Mercury;
-            case 1: return Planet.Venus;
-            case 2: return Planet.Earth;
-            // ...
-            }
-        } else if (typeof nameindexOrType === 'String') {
-            nameindexOrType = nameindexOrType.ToUpperCase();
-            switch(nameindexOrType){
-            case 'MERCURY': return Planet.Mercury;
-            case 'VENUS': return Planet.Venus;
-            case 'EARTH': return Planet.Earth;
-            // ...
-            }
-        } else {
-            return null;
-        }
-    }
-}
-
-enum Planet: PlanetType {
-    Mercury = new PlanetType("Mercury", 1, 1),
-    Venus = new PlanetType("Venus", 2.8, 2),
-    Earth = new PlanetType("Home", 3, 3),
-    // ...
-}
-
-/*
- * The DeploymentStatus Java example
- */
-class DeploymentStatusType implements InternationalizedEnumType {
-    constructor(
-        private value: number,
-        private code: string,
-        private messageCode: string);
-
-    getCode() { return code; }
-
-    getValue() { return value; }
-
-    getMessageCode() { return messageCode; }
-
-    static parse(id: number) {
-        if (id != null) {
-            switch (id) {
-            case 100: return DeploymentStatus.PENDING;
-            case 110: return DeploymentStatus.QUEUED_FOR_RELEASE;
-            case 120: return DeploymentStatus.READY_FOR_RELEASE;
-            case 130: return DeploymentStatus.RELEASING;
-            case 140: return DeploymentStatus.RELEASED;
-            case 200: return DeploymentStatus.QUEUED;
-            case 300: return DeploymentStatus.READY;
-            case 400: return DeploymentStatus.STARTED;
-            case 500: return DeploymentStatus.SUCCEEDED;
-            case 600: return DeploymentStatus.FAILED;
-            case 700: return DeploymentStatus.UNKNOWN;
-            }
-        }
-        return DeploymentStatus.UNDEFINED;
-    }
-
-    isFinalStatus() {
-        return this === DeploymentStatus.SUCCEEDED ||
-            this === DeploymentStatus.FAILED ||
-            this === DeploymentStatus.UNKNOWN;
-    }
-}
-
-export default enum DeploymentStatus {
-    PENDING = new DeploymentStatusType(100, "STATUS_PENDING", "status.pending"),
-    QUEUED_FOR_RELEASE = new DeploymentStatusType(110, "STATUS_QUEUED_FOR_RELEASE", "status.queuedrelease"),
-    READY_FOR_RELEASE = new DeploymentStatusType(120, "STATUS_QUEUED_RELEASE","status.readyrelease"),
-    RELEASING = new DeploymentStatusType(130, "STATUS_RELEASING", "status.startedrelease"),
-    RELEASED = new DeploymentStatusType(140, "STATUS_RELEASED", "status.suceededrelease"),
-    QUEUED = new DeploymentStatusType(200, "STATUS_QUEUED", "status.queued"),
-    READY = new DeploymentStatusType(300, "STATUS_READY", "status.ready"),
-    STARTED = new DeploymentStatusType(400, "STATUS_STARTED", "status.started"),
-    SUCCEEDED = new DeploymentStatusType(500, "STATUS_SUCCEEDED", "status.succeeded"),
-    FAILED = new DeploymentStatusType(600, "STATUS_FAILED", "status.failed"),
-    UNKNOWN = new DeploymentStatusType(700, "STATUS_UNKNOWN", "status.unknown"),
-    UNDEFINED = new DeploymentStatusType(0, "", "status.undefined");
-}
 ```
