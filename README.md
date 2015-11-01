@@ -240,42 +240,42 @@ For each *EnumMember*, if *EnumValue* is not given, then *EnumValue* is defined 
 3.  Else, if *Type* is the Symbol primitive type, then let *EnumValue* be *PropertyName*.
 4.  Else, if the constructor for *Type* accepts a single parameter of the String primitive type, then let *EnumValue* be a newly constructed instance of *Type* with a sole argument *PropertyName*.
 
-    *Non-normative:*
-
-    In other words, *Type*'s constructor must implement
-
-    ```ts
-    interface TypeConstructorWithString {
-        new (value: string): <Type>;
-    }
-    ```
+    > *Non-normative:*
+    >
+    > In other words, *Type*'s constructor must implement
+    >
+    > ```ts
+    > interface TypeConstructorWithString {
+    >     new (value: string): <Type>;
+    > }
+    > ```
 
 5.  Else, if the constructor for *Type* accepts a single parameter of the Number primitive type, then:
     1.  If the member is the first in the declaration, then let *EnumValue* be let *EnumValue* be a newly constructed instance of *Type* with a sole argument of the primitive number 0.
     2.  Else, if the previous member's *EnumValue* is a newly constructed instance of *Type*, and the constructor is called with a sole argument that can be classified as a constant numeric enum member, then let *EnumValue* be that constructor call's argument plus one.
     3.  Else, an error occurs.
     
-    *Non-normative:*
-    
-    In other words, *Type*'s constructor must implement
-    
-    ```ts
-    interface TypeConstructorWithNumber {
-        new (value: number): <Type>;
-    }
-    ```
+    > *Non-normative:*
+    >
+    > In other words, *Type*'s constructor must implement
+    >
+    > ```ts
+    > interface TypeConstructorWithNumber {
+    >     new (value: number): <Type>;
+    > }
+    > ```
     
 6.  Else, if the constructor for *Type* accepts zero parameters, then let *EnumValue* be a newly constructed instance of *Type*, with zero arguments.
 
-    *Non-normative:*
-
-    In other words, *Type*'s constructor must implement
-
-    ```ts
-    interface TypeConstructorWithString {
-        new (): <Type>;
-    }
-    ```
+    > *Non-normative:*
+    >
+    > In other words, *Type*'s constructor must implement
+    >
+    > ```ts
+    > interface TypeConstructorWithString {
+    >     new (): <Type>;
+    > }
+    > ```
 
 7.  Else, an error occurs.
 
@@ -378,6 +378,20 @@ A ***constant string enum expression*** is a subset of the expression grammar th
 - An identifier or property access that denotes a previously declared member in the same constant enum declaration, if *Type* is the String primitive type.
 - A parenthesized constant string enum expression.
 - A + operator applied to two constant enum expressions, one of which is a constant string enum expression.
+
+> *Non-normative:*
+>
+> For example, `Names.All` is a constant enum member.
+>
+> ```ts
+> enum Names: string {
+>     John = "John Smith",
+>     Cara = "Cara Clark",
+>     Lindsay = "Lindsay Thompson",
+>     All = `${Names.John}, ${Names.Cara}, and ${Names.Lindsay}`,
+> }
+> ```
+
 
 ## Proposed emit
 
